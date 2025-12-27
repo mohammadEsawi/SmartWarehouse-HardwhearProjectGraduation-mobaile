@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
 class WarehouseCell {
   final int id;
   final int rowNum;
@@ -31,15 +34,15 @@ class WarehouseCell {
 
   factory WarehouseCell.fromJson(Map<String, dynamic> json) {
     return WarehouseCell(
-      id: json['id'],
-      rowNum: json['row_num'],
-      colNum: json['col_num'],
-      label: json['label'],
+      id: json['id'] as int,
+      rowNum: json['row_num'] as int,
+      colNum: json['col_num'] as int,
+      label: json['label'] as String,
       status: json['status'] ?? 'EMPTY',
-      productId: json['product_id'],
-      productName: json['product_name'],
-      productSku: json['sku'],
-      rfidUid: json['rfid_uid'],
+      productId: json['product_id'] as int?,
+      productName: json['product_name'] as String?,
+      productSku: json['sku'] as String?,
+      rfidUid: json['rfid_uid'] as String?,
       quantity: json['quantity'] ?? 0,
       updatedAt: DateTime.parse(json['updated_at']),
     );
@@ -59,6 +62,34 @@ class WarehouseCell {
       'quantity': quantity,
       'updated_at': updatedAt.toIso8601String(),
     };
+  }
+
+  String get formattedUpdatedAt {
+    return DateFormat('MMM dd, HH:mm').format(updatedAt);
+  }
+
+  Color get statusColor {
+    switch (status) {
+      case 'OCCUPIED':
+        return const Color(0xFF10B981);
+      case 'RESERVED':
+        return const Color(0xFFF59E0B);
+      case 'EMPTY':
+      default:
+        return const Color(0xFF6B7280);
+    }
+  }
+
+  IconData get statusIcon {
+    switch (status) {
+      case 'OCCUPIED':
+        return Icons.check_circle;
+      case 'RESERVED':
+        return Icons.access_time;
+      case 'EMPTY':
+      default:
+        return Icons.crop_square;
+    }
   }
 
   WarehouseCell copyWith({
@@ -92,4 +123,18 @@ class WarehouseCell {
       isLoading: isLoading ?? this.isLoading,
     );
   }
+
+  @override
+  String toString() {
+    return 'WarehouseCell(id: $id, label: $label, status: $status, product: $productName)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is WarehouseCell && other.id == id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
 }
